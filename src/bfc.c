@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define BITS 1024
+#define BITS 65535
 typedef struct {
     char op;
     int index;
@@ -41,7 +41,7 @@ int parser(char* filename){
         printf("Error: Cannot open %s, please check whether the file exists.\n", filename);
         exit(1);
     }
-    char* ptr = malloc(sizeof(char) * BITS);
+    char ptr[BITS];
     int i;
     for(i=0;i<BITS;i++){
         ptr[i] = '\0';
@@ -68,7 +68,7 @@ int interpreter(FILE *fp, char *ptr){
                 (*ptr)--;
                 break;
             case '.':
-                printf("%d", *ptr);
+                printf("%d\n", *ptr);
                 break;
             case ',':
                 *ptr = getchar();
@@ -90,12 +90,8 @@ int interpreter(FILE *fp, char *ptr){
                 comment++;
                 if(comment == 2){
                     comment = 0;
-                    do{
-                        fscanf(fp, "%c", &op);
-                    }while(op != '\n');
+                    while(op != '\n' && fscanf(fp, "%c", &op) != EOF);
                 }
-            default:
-                break;
         }
     }
 }
